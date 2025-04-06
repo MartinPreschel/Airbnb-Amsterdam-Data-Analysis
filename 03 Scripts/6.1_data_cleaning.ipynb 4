@@ -1,0 +1,1062 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "300b610f-6c72-485c-a1b4-69c637adddfa",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# import libraries\n",
+    "\n",
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "import os\n",
+    "import matplotlib.pyplot as plt\n",
+    "import seaborn as sns\n",
+    "import scipy"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "9d5651dd-c666-4a20-a4b1-be9080aecb2e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# data set path\n",
+    "\n",
+    "path = r\"/Users/martin/anaconda_projects/11-02-2025 Instacart Basket Analysis\""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "37e0de22-64c5-4c7e-821c-a6ef02a3dd90",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# import amsterdam_listings.csv\n",
+    "\n",
+    "df = pd.read_csv(os.path.join(path, '02 data' , 'Original Data' , 'amsterdam_listings.csv'))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a1def051-b711-4f35-a513-c4821bfd9507",
+   "metadata": {},
+   "source": [
+    "# Task 5) Data Cleaning"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "57e259c1-1c67-4ed9-938f-79384ab6cf96",
+   "metadata": {},
+   "source": [
+    "## 1. Shape & Overview"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "1fb1c892-f509-4519-8f68-8ec7d16f97b4",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(10075, 79)"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.shape       # Rows and columns"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "42d06626-445d-485d-ba55-3dda48799ba7",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Index(['id', 'listing_url', 'scrape_id', 'last_scraped', 'source', 'name',\n",
+       "       'description', 'neighborhood_overview', 'picture_url', 'host_id',\n",
+       "       'host_url', 'host_name', 'host_since', 'host_location', 'host_about',\n",
+       "       'host_response_time', 'host_response_rate', 'host_acceptance_rate',\n",
+       "       'host_is_superhost', 'host_thumbnail_url', 'host_picture_url',\n",
+       "       'host_neighbourhood', 'host_listings_count',\n",
+       "       'host_total_listings_count', 'host_verifications',\n",
+       "       'host_has_profile_pic', 'host_identity_verified', 'neighbourhood',\n",
+       "       'neighbourhood_cleansed', 'neighbourhood_group_cleansed', 'latitude',\n",
+       "       'longitude', 'property_type', 'room_type', 'accommodates', 'bathrooms',\n",
+       "       'bathrooms_text', 'bedrooms', 'beds', 'amenities', 'price',\n",
+       "       'minimum_nights', 'maximum_nights', 'minimum_minimum_nights',\n",
+       "       'maximum_minimum_nights', 'minimum_maximum_nights',\n",
+       "       'maximum_maximum_nights', 'minimum_nights_avg_ntm',\n",
+       "       'maximum_nights_avg_ntm', 'calendar_updated', 'has_availability',\n",
+       "       'availability_30', 'availability_60', 'availability_90',\n",
+       "       'availability_365', 'calendar_last_scraped', 'number_of_reviews',\n",
+       "       'number_of_reviews_ltm', 'number_of_reviews_l30d', 'availability_eoy',\n",
+       "       'number_of_reviews_ly', 'estimated_occupancy_l365d',\n",
+       "       'estimated_revenue_l365d', 'first_review', 'last_review',\n",
+       "       'review_scores_rating', 'review_scores_accuracy',\n",
+       "       'review_scores_cleanliness', 'review_scores_checkin',\n",
+       "       'review_scores_communication', 'review_scores_location',\n",
+       "       'review_scores_value', 'license', 'instant_bookable',\n",
+       "       'calculated_host_listings_count',\n",
+       "       'calculated_host_listings_count_entire_homes',\n",
+       "       'calculated_host_listings_count_private_rooms',\n",
+       "       'calculated_host_listings_count_shared_rooms', 'reviews_per_month'],\n",
+       "      dtype='object')"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.columns     # Column names"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "6d61ae75-d2bc-4897-aa85-0c937eb4a946",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 10075 entries, 0 to 10074\n",
+      "Data columns (total 79 columns):\n",
+      " #   Column                                        Non-Null Count  Dtype  \n",
+      "---  ------                                        --------------  -----  \n",
+      " 0   id                                            10075 non-null  int64  \n",
+      " 1   listing_url                                   10075 non-null  object \n",
+      " 2   scrape_id                                     10075 non-null  int64  \n",
+      " 3   last_scraped                                  10075 non-null  object \n",
+      " 4   source                                        10075 non-null  object \n",
+      " 5   name                                          10075 non-null  object \n",
+      " 6   description                                   9729 non-null   object \n",
+      " 7   neighborhood_overview                         5332 non-null   object \n",
+      " 8   picture_url                                   10075 non-null  object \n",
+      " 9   host_id                                       10075 non-null  int64  \n",
+      " 10  host_url                                      10075 non-null  object \n",
+      " 11  host_name                                     10058 non-null  object \n",
+      " 12  host_since                                    10058 non-null  object \n",
+      " 13  host_location                                 8933 non-null   object \n",
+      " 14  host_about                                    5315 non-null   object \n",
+      " 15  host_response_time                            6192 non-null   object \n",
+      " 16  host_response_rate                            6192 non-null   object \n",
+      " 17  host_acceptance_rate                          7989 non-null   object \n",
+      " 18  host_is_superhost                             9949 non-null   object \n",
+      " 19  host_thumbnail_url                            10058 non-null  object \n",
+      " 20  host_picture_url                              10058 non-null  object \n",
+      " 21  host_neighbourhood                            2868 non-null   object \n",
+      " 22  host_listings_count                           10058 non-null  float64\n",
+      " 23  host_total_listings_count                     10058 non-null  float64\n",
+      " 24  host_verifications                            10058 non-null  object \n",
+      " 25  host_has_profile_pic                          10058 non-null  object \n",
+      " 26  host_identity_verified                        10058 non-null  object \n",
+      " 27  neighbourhood                                 5332 non-null   object \n",
+      " 28  neighbourhood_cleansed                        10075 non-null  object \n",
+      " 29  neighbourhood_group_cleansed                  0 non-null      float64\n",
+      " 30  latitude                                      10075 non-null  float64\n",
+      " 31  longitude                                     10075 non-null  float64\n",
+      " 32  property_type                                 10075 non-null  object \n",
+      " 33  room_type                                     10075 non-null  object \n",
+      " 34  accommodates                                  10075 non-null  int64  \n",
+      " 35  bathrooms                                     5960 non-null   float64\n",
+      " 36  bathrooms_text                                10067 non-null  object \n",
+      " 37  bedrooms                                      9783 non-null   float64\n",
+      " 38  beds                                          5925 non-null   float64\n",
+      " 39  amenities                                     10075 non-null  object \n",
+      " 40  price                                         5911 non-null   object \n",
+      " 41  minimum_nights                                10075 non-null  int64  \n",
+      " 42  maximum_nights                                10075 non-null  int64  \n",
+      " 43  minimum_minimum_nights                        10066 non-null  float64\n",
+      " 44  maximum_minimum_nights                        10066 non-null  float64\n",
+      " 45  minimum_maximum_nights                        10066 non-null  float64\n",
+      " 46  maximum_maximum_nights                        10066 non-null  float64\n",
+      " 47  minimum_nights_avg_ntm                        10066 non-null  float64\n",
+      " 48  maximum_nights_avg_ntm                        10066 non-null  float64\n",
+      " 49  calendar_updated                              0 non-null      float64\n",
+      " 50  has_availability                              9720 non-null   object \n",
+      " 51  availability_30                               10075 non-null  int64  \n",
+      " 52  availability_60                               10075 non-null  int64  \n",
+      " 53  availability_90                               10075 non-null  int64  \n",
+      " 54  availability_365                              10075 non-null  int64  \n",
+      " 55  calendar_last_scraped                         10075 non-null  object \n",
+      " 56  number_of_reviews                             10075 non-null  int64  \n",
+      " 57  number_of_reviews_ltm                         10075 non-null  int64  \n",
+      " 58  number_of_reviews_l30d                        10075 non-null  int64  \n",
+      " 59  availability_eoy                              10075 non-null  int64  \n",
+      " 60  number_of_reviews_ly                          10075 non-null  int64  \n",
+      " 61  estimated_occupancy_l365d                     10075 non-null  int64  \n",
+      " 62  estimated_revenue_l365d                       5911 non-null   float64\n",
+      " 63  first_review                                  8944 non-null   object \n",
+      " 64  last_review                                   8944 non-null   object \n",
+      " 65  review_scores_rating                          8944 non-null   float64\n",
+      " 66  review_scores_accuracy                        8944 non-null   float64\n",
+      " 67  review_scores_cleanliness                     8943 non-null   float64\n",
+      " 68  review_scores_checkin                         8944 non-null   float64\n",
+      " 69  review_scores_communication                   8944 non-null   float64\n",
+      " 70  review_scores_location                        8944 non-null   float64\n",
+      " 71  review_scores_value                           8944 non-null   float64\n",
+      " 72  license                                       9948 non-null   object \n",
+      " 73  instant_bookable                              10075 non-null  object \n",
+      " 74  calculated_host_listings_count                10075 non-null  int64  \n",
+      " 75  calculated_host_listings_count_entire_homes   10075 non-null  int64  \n",
+      " 76  calculated_host_listings_count_private_rooms  10075 non-null  int64  \n",
+      " 77  calculated_host_listings_count_shared_rooms   10075 non-null  int64  \n",
+      " 78  reviews_per_month                             8944 non-null   float64\n",
+      "dtypes: float64(24), int64(20), object(35)\n",
+      "memory usage: 6.1+ MB\n"
+     ]
+    }
+   ],
+   "source": [
+    "df.info()      # Data types and non-null counts"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "8e820b30-6701-49a9-aefc-271a60ae95a0",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>id</th>\n",
+       "      <th>listing_url</th>\n",
+       "      <th>scrape_id</th>\n",
+       "      <th>last_scraped</th>\n",
+       "      <th>source</th>\n",
+       "      <th>name</th>\n",
+       "      <th>description</th>\n",
+       "      <th>neighborhood_overview</th>\n",
+       "      <th>picture_url</th>\n",
+       "      <th>host_id</th>\n",
+       "      <th>...</th>\n",
+       "      <th>review_scores_communication</th>\n",
+       "      <th>review_scores_location</th>\n",
+       "      <th>review_scores_value</th>\n",
+       "      <th>license</th>\n",
+       "      <th>instant_bookable</th>\n",
+       "      <th>calculated_host_listings_count</th>\n",
+       "      <th>calculated_host_listings_count_entire_homes</th>\n",
+       "      <th>calculated_host_listings_count_private_rooms</th>\n",
+       "      <th>calculated_host_listings_count_shared_rooms</th>\n",
+       "      <th>reviews_per_month</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>2818</td>\n",
+       "      <td>https://www.airbnb.com/rooms/2818</td>\n",
+       "      <td>20250302144653</td>\n",
+       "      <td>2025-03-03</td>\n",
+       "      <td>city scrape</td>\n",
+       "      <td>Quiet Garden View Room &amp; Super Fast Wi-Fi</td>\n",
+       "      <td>Quiet Garden View Room &amp; Super Fast Wi-Fi</td>\n",
+       "      <td>Indische Buurt (\"Indies Neighborhood\") is a ne...</td>\n",
+       "      <td>https://a0.muscache.com/pictures/10272854/8dcc...</td>\n",
+       "      <td>3159</td>\n",
+       "      <td>...</td>\n",
+       "      <td>4.98</td>\n",
+       "      <td>4.73</td>\n",
+       "      <td>4.80</td>\n",
+       "      <td>0363 5F3A 5684 6750 D14D</td>\n",
+       "      <td>f</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2.05</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>27886</td>\n",
+       "      <td>https://www.airbnb.com/rooms/27886</td>\n",
+       "      <td>20250302144653</td>\n",
+       "      <td>2025-03-03</td>\n",
+       "      <td>previous scrape</td>\n",
+       "      <td>Romantic, stylish B&amp;B houseboat in canal district</td>\n",
+       "      <td>Stylish and romantic houseboat on fantastic hi...</td>\n",
+       "      <td>Central, quiet, safe, clean and beautiful.</td>\n",
+       "      <td>https://a0.muscache.com/pictures/02c2da9d-660e...</td>\n",
+       "      <td>97647</td>\n",
+       "      <td>...</td>\n",
+       "      <td>4.92</td>\n",
+       "      <td>4.89</td>\n",
+       "      <td>4.77</td>\n",
+       "      <td>0363 974D 4986 7411 88D8</td>\n",
+       "      <td>f</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.84</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>28871</td>\n",
+       "      <td>https://www.airbnb.com/rooms/28871</td>\n",
+       "      <td>20250302144653</td>\n",
+       "      <td>2025-03-03</td>\n",
+       "      <td>city scrape</td>\n",
+       "      <td>Comfortable double room</td>\n",
+       "      <td>Basic bedroom in the center of Amsterdam.</td>\n",
+       "      <td>Flower market , Leidseplein , Rembrantsplein</td>\n",
+       "      <td>https://a0.muscache.com/pictures/160889/362340...</td>\n",
+       "      <td>124245</td>\n",
+       "      <td>...</td>\n",
+       "      <td>4.94</td>\n",
+       "      <td>4.94</td>\n",
+       "      <td>4.83</td>\n",
+       "      <td>0363 607B EA74 0BD8 2F6F</td>\n",
+       "      <td>f</td>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.83</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>29051</td>\n",
+       "      <td>https://www.airbnb.com/rooms/29051</td>\n",
+       "      <td>20250302144653</td>\n",
+       "      <td>2025-03-03</td>\n",
+       "      <td>city scrape</td>\n",
+       "      <td>Comfortable single room</td>\n",
+       "      <td>This room can also be rented as a single or a ...</td>\n",
+       "      <td>the street is quite lively especially on weeke...</td>\n",
+       "      <td>https://a0.muscache.com/pictures/162009/bd6be2...</td>\n",
+       "      <td>124245</td>\n",
+       "      <td>...</td>\n",
+       "      <td>4.92</td>\n",
+       "      <td>4.87</td>\n",
+       "      <td>4.79</td>\n",
+       "      <td>0363 607B EA74 0BD8 2F6F</td>\n",
+       "      <td>f</td>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>4.67</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>44391</td>\n",
+       "      <td>https://www.airbnb.com/rooms/44391</td>\n",
+       "      <td>20250302144653</td>\n",
+       "      <td>2025-03-03</td>\n",
+       "      <td>previous scrape</td>\n",
+       "      <td>Quiet 2-bedroom Amsterdam city centre apartment</td>\n",
+       "      <td>Guests greatly appreciate the unique location ...</td>\n",
+       "      <td>The appartment is located in the city centre. ...</td>\n",
+       "      <td>https://a0.muscache.com/pictures/97741545/3900...</td>\n",
+       "      <td>194779</td>\n",
+       "      <td>...</td>\n",
+       "      <td>4.90</td>\n",
+       "      <td>4.68</td>\n",
+       "      <td>4.50</td>\n",
+       "      <td>0363 E76E F06A C1DD 172C</td>\n",
+       "      <td>f</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0.24</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>5 rows × 79 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "      id                         listing_url       scrape_id last_scraped  \\\n",
+       "0   2818   https://www.airbnb.com/rooms/2818  20250302144653   2025-03-03   \n",
+       "1  27886  https://www.airbnb.com/rooms/27886  20250302144653   2025-03-03   \n",
+       "2  28871  https://www.airbnb.com/rooms/28871  20250302144653   2025-03-03   \n",
+       "3  29051  https://www.airbnb.com/rooms/29051  20250302144653   2025-03-03   \n",
+       "4  44391  https://www.airbnb.com/rooms/44391  20250302144653   2025-03-03   \n",
+       "\n",
+       "            source                                               name  \\\n",
+       "0      city scrape          Quiet Garden View Room & Super Fast Wi-Fi   \n",
+       "1  previous scrape  Romantic, stylish B&B houseboat in canal district   \n",
+       "2      city scrape                            Comfortable double room   \n",
+       "3      city scrape                            Comfortable single room   \n",
+       "4  previous scrape    Quiet 2-bedroom Amsterdam city centre apartment   \n",
+       "\n",
+       "                                         description  \\\n",
+       "0          Quiet Garden View Room & Super Fast Wi-Fi   \n",
+       "1  Stylish and romantic houseboat on fantastic hi...   \n",
+       "2          Basic bedroom in the center of Amsterdam.   \n",
+       "3  This room can also be rented as a single or a ...   \n",
+       "4  Guests greatly appreciate the unique location ...   \n",
+       "\n",
+       "                               neighborhood_overview  \\\n",
+       "0  Indische Buurt (\"Indies Neighborhood\") is a ne...   \n",
+       "1         Central, quiet, safe, clean and beautiful.   \n",
+       "2       Flower market , Leidseplein , Rembrantsplein   \n",
+       "3  the street is quite lively especially on weeke...   \n",
+       "4  The appartment is located in the city centre. ...   \n",
+       "\n",
+       "                                         picture_url  host_id  ...  \\\n",
+       "0  https://a0.muscache.com/pictures/10272854/8dcc...     3159  ...   \n",
+       "1  https://a0.muscache.com/pictures/02c2da9d-660e...    97647  ...   \n",
+       "2  https://a0.muscache.com/pictures/160889/362340...   124245  ...   \n",
+       "3  https://a0.muscache.com/pictures/162009/bd6be2...   124245  ...   \n",
+       "4  https://a0.muscache.com/pictures/97741545/3900...   194779  ...   \n",
+       "\n",
+       "  review_scores_communication review_scores_location review_scores_value  \\\n",
+       "0                        4.98                   4.73                4.80   \n",
+       "1                        4.92                   4.89                4.77   \n",
+       "2                        4.94                   4.94                4.83   \n",
+       "3                        4.92                   4.87                4.79   \n",
+       "4                        4.90                   4.68                4.50   \n",
+       "\n",
+       "                    license instant_bookable calculated_host_listings_count  \\\n",
+       "0  0363 5F3A 5684 6750 D14D                f                              1   \n",
+       "1  0363 974D 4986 7411 88D8                f                              1   \n",
+       "2  0363 607B EA74 0BD8 2F6F                f                              2   \n",
+       "3  0363 607B EA74 0BD8 2F6F                f                              2   \n",
+       "4  0363 E76E F06A C1DD 172C                f                              1   \n",
+       "\n",
+       "  calculated_host_listings_count_entire_homes  \\\n",
+       "0                                           0   \n",
+       "1                                           0   \n",
+       "2                                           0   \n",
+       "3                                           0   \n",
+       "4                                           1   \n",
+       "\n",
+       "  calculated_host_listings_count_private_rooms  \\\n",
+       "0                                            1   \n",
+       "1                                            1   \n",
+       "2                                            2   \n",
+       "3                                            2   \n",
+       "4                                            0   \n",
+       "\n",
+       "  calculated_host_listings_count_shared_rooms reviews_per_month  \n",
+       "0                                           0              2.05  \n",
+       "1                                           0              1.84  \n",
+       "2                                           0              3.83  \n",
+       "3                                           0              4.67  \n",
+       "4                                           0              0.24  \n",
+       "\n",
+       "[5 rows x 79 columns]"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.head()      # First rows"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f2d0508c-25c7-45a8-b6c0-755869cee49f",
+   "metadata": {},
+   "source": [
+    "## 2. Find Missing Values"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "e2831c77-1c12-4ca8-bfae-0ba25f95f684",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "calendar_updated                10075\n",
+       "neighbourhood_group_cleansed    10075\n",
+       "host_neighbourhood               7207\n",
+       "host_about                       4760\n",
+       "neighbourhood                    4743\n",
+       "                                ...  \n",
+       "maximum_nights                      0\n",
+       "availability_30                     0\n",
+       "availability_60                     0\n",
+       "availability_90                     0\n",
+       "amenities                           0\n",
+       "Length: 79, dtype: int64"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.isnull().sum().sort_values(ascending=False)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "280cbfbb-7044-4885-bd9f-da0d4fb211f1",
+   "metadata": {},
+   "source": [
+    "### Several columns contain missing values. The most significant are:\n",
+    "- `calendar_updated` (10,075 missing): This field is often left blank when hosts do not manually update their calendars.\n",
+    "- `neighbourhood_group_cleansed` and `neighbourhood` (10,075 and 4,743 missing): These are important for geographic analysis. If necessary, I will use `latitude` and `longitude` as an alternative.\n",
+    "- `host_neighbourhood` and `host_about`: These are optional fields that do not impact the main analysis.\n",
+    "\n",
+    "No missing values were found in key fields such as `price`, `room_type`, `availability_*`, or `amenities`.\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a130422a-192e-4790-a1ab-0f7bf8f83aab",
+   "metadata": {},
+   "source": [
+    "## 3. Check Duplicates"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "27cca5d6-9366-4f5b-941e-677f3a742f6a",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.duplicated().sum()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f63aa670-73de-4764-96e9-eae8d48a3661",
+   "metadata": {},
+   "source": [
+    "### No duplicate rows were found in the dataset (`df.duplicated().sum()` returned 0), which confirms that all listings are unique."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "95e1f635-0083-4269-b2cb-b62aaefdd09f",
+   "metadata": {},
+   "source": [
+    "## 4. Check Data Types"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "62eef1cb-36c6-4a39-a9ac-44bfe0d6b34b",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "id                                                int64\n",
+       "listing_url                                      object\n",
+       "scrape_id                                         int64\n",
+       "last_scraped                                     object\n",
+       "source                                           object\n",
+       "                                                 ...   \n",
+       "calculated_host_listings_count                    int64\n",
+       "calculated_host_listings_count_entire_homes       int64\n",
+       "calculated_host_listings_count_private_rooms      int64\n",
+       "calculated_host_listings_count_shared_rooms       int64\n",
+       "reviews_per_month                               float64\n",
+       "Length: 79, dtype: object"
+      ]
+     },
+     "execution_count": 18,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.dtypes"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5b1d0b81-3c9e-4f0d-84d5-125d9aed4c74",
+   "metadata": {},
+   "source": [
+    "### Step 1: Fix Any Data Types"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "289b5744-af95-4f17-bbb3-3efad9de312b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Convert last_scraped and other date columns:\n",
+    "\n",
+    "df['last_scraped'] = pd.to_datetime(df['last_scraped'], errors='coerce')\n",
+    "df['calendar_last_scraped'] = pd.to_datetime(df['calendar_last_scraped'], errors='coerce')\n",
+    "df['first_review'] = pd.to_datetime(df['first_review'], errors='coerce')\n",
+    "df['last_review'] = pd.to_datetime(df['last_review'], errors='coerce')\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "6bb3ff25-64d5-4496-9017-7e1408e84d8b",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0    $66.00\n",
+       "1       NaN\n",
+       "2    $75.00\n",
+       "3    $59.00\n",
+       "4       NaN\n",
+       "Name: price, dtype: object"
+      ]
+     },
+     "execution_count": 21,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Convert price (if it exists and is stored as object):\n",
+    "\n",
+    "df['price'].head()\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "35856e89-2787-4f7c-b118-ddb24408d399",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Remove $ and commas, convert to float (numeric)\n",
+    "df['price'] = df['price'].replace(r'[\\$,]', '', regex=True)\n",
+    "\n",
+    "# Now convert to numeric and handle any errors\n",
+    "df['price'] = pd.to_numeric(df['price'], errors='coerce')\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "5e1ebc20-f3a4-46ec-91b3-2a79c26ba775",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "dtype('float64')"
+      ]
+     },
+     "execution_count": 23,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Check Result\n",
+    "df['price'].head()\n",
+    "df['price'].dtype\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "58900997-e35f-491e-b7a4-0afc31e39d78",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Index(['listing_url', 'source', 'name', 'description', 'neighborhood_overview',\n",
+       "       'picture_url', 'host_url', 'host_name', 'host_since', 'host_location',\n",
+       "       'host_about', 'host_response_time', 'host_response_rate',\n",
+       "       'host_acceptance_rate', 'host_is_superhost', 'host_thumbnail_url',\n",
+       "       'host_picture_url', 'host_neighbourhood', 'host_verifications',\n",
+       "       'host_has_profile_pic', 'host_identity_verified', 'neighbourhood',\n",
+       "       'neighbourhood_cleansed', 'property_type', 'room_type',\n",
+       "       'bathrooms_text', 'amenities', 'has_availability', 'license',\n",
+       "       'instant_bookable'],\n",
+       "      dtype='object')"
+      ]
+     },
+     "execution_count": 24,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Show all columns currently stored as object\n",
+    "df.select_dtypes(include='object').columns"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "246140e6-f99e-4ee3-af92-b350a410c8c6",
+   "metadata": {},
+   "source": [
+    "## 5. Recognize Outliers (e.g. with price)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "id": "53a18e75-a2a1-4942-ba42-930a041999e0",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Axes: >"
+      ]
+     },
+     "execution_count": 26,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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",
+      "text/plain": [
+       "<Figure size 640x480 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "# Visualize the distribution of prices using a boxplot to identify potential outliers.\n",
+    "# This chart helps spot listings with extremely high prices that may affect the overall analysis.\n",
+    "df['price'].plot.box()\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "id": "f40157b5-de4d-4069-a0f0-c8b37272452d",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "count     5911.000000\n",
+       "mean       265.115716\n",
+       "std        422.193489\n",
+       "min         10.000000\n",
+       "25%        145.000000\n",
+       "50%        209.000000\n",
+       "75%        300.000000\n",
+       "max      14404.000000\n",
+       "Name: price, dtype: float64"
+      ]
+     },
+     "execution_count": 27,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Display descriptive statistics for the 'price' column to better understand the overall distribution.\n",
+    "# Includes key metrics like mean, median, standard deviation, min, and max.\n",
+    "df['price'].describe()\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "be45c149-ed65-4dcb-92a6-d73ca7805941",
+   "metadata": {},
+   "source": [
+    "#  Task 6) Understanding the Data"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a82086b5-ecc8-46e1-99c8-a5e25883bd27",
+   "metadata": {},
+   "source": [
+    "### Outlier Analysis: `price`\n",
+    "\n",
+    "To explore potential outliers, I plotted a boxplot of the `price` column.  \n",
+    "The chart shows that most listings fall within a typical price range, but there are several significant outliers.\n",
+    "\n",
+    "Most prices are below €500, while some extreme values go beyond €10,000. These are likely rare or luxury listings and may skew the distribution.\n",
+    "\n",
+    "At this stage, I decided to keep the outliers in the dataset, but I may consider filtering them in specific analyses later, depending on the context.\n",
+    "\n",
+    "According to the descriptive statistics of the `price` column, 75% of listings cost less than €300, while the maximum price is €14,404.  \n",
+    "This confirms the presence of extreme outliers. The average price is €265, which is notably higher than the median (€209), indicating a right-skewed distribution.\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "73295ed5-c396-4150-bef5-a08018545e2c",
+   "metadata": {},
+   "source": [
+    "## 6. List of all numeric variables"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "95244224-b14a-4a13-8071-8ef46ecf3c20",
+   "metadata": {},
+   "source": [
+    "## Step 1: List of all numeric variables"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "id": "99710449-0cfd-4f7c-97dd-3c1aaa585c26",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['id',\n",
+       " 'scrape_id',\n",
+       " 'host_id',\n",
+       " 'host_listings_count',\n",
+       " 'host_total_listings_count',\n",
+       " 'neighbourhood_group_cleansed',\n",
+       " 'latitude',\n",
+       " 'longitude',\n",
+       " 'accommodates',\n",
+       " 'bathrooms',\n",
+       " 'bedrooms',\n",
+       " 'beds',\n",
+       " 'price',\n",
+       " 'minimum_nights',\n",
+       " 'maximum_nights',\n",
+       " 'minimum_minimum_nights',\n",
+       " 'maximum_minimum_nights',\n",
+       " 'minimum_maximum_nights',\n",
+       " 'maximum_maximum_nights',\n",
+       " 'minimum_nights_avg_ntm',\n",
+       " 'maximum_nights_avg_ntm',\n",
+       " 'calendar_updated',\n",
+       " 'availability_30',\n",
+       " 'availability_60',\n",
+       " 'availability_90',\n",
+       " 'availability_365',\n",
+       " 'number_of_reviews',\n",
+       " 'number_of_reviews_ltm',\n",
+       " 'number_of_reviews_l30d',\n",
+       " 'availability_eoy',\n",
+       " 'number_of_reviews_ly',\n",
+       " 'estimated_occupancy_l365d',\n",
+       " 'estimated_revenue_l365d',\n",
+       " 'review_scores_rating',\n",
+       " 'review_scores_accuracy',\n",
+       " 'review_scores_cleanliness',\n",
+       " 'review_scores_checkin',\n",
+       " 'review_scores_communication',\n",
+       " 'review_scores_location',\n",
+       " 'review_scores_value',\n",
+       " 'calculated_host_listings_count',\n",
+       " 'calculated_host_listings_count_entire_homes',\n",
+       " 'calculated_host_listings_count_private_rooms',\n",
+       " 'calculated_host_listings_count_shared_rooms',\n",
+       " 'reviews_per_month']"
+      ]
+     },
+     "execution_count": 32,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# This shows all columns that contain numbers - e.g. price, minimum_nights, availability_365 etc\n",
+    "df.select_dtypes(include=['int64', 'float64']).columns.tolist()\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "39f85b6a-edfa-4fda-9681-a337a43f3448",
+   "metadata": {},
+   "source": [
+    "## Step 2: List of all categorical variables"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 34,
+   "id": "3e54847b-363e-4a88-8129-a211e3643ba2",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['listing_url',\n",
+       " 'source',\n",
+       " 'name',\n",
+       " 'description',\n",
+       " 'neighborhood_overview',\n",
+       " 'picture_url',\n",
+       " 'host_url',\n",
+       " 'host_name',\n",
+       " 'host_since',\n",
+       " 'host_location',\n",
+       " 'host_about',\n",
+       " 'host_response_time',\n",
+       " 'host_response_rate',\n",
+       " 'host_acceptance_rate',\n",
+       " 'host_is_superhost',\n",
+       " 'host_thumbnail_url',\n",
+       " 'host_picture_url',\n",
+       " 'host_neighbourhood',\n",
+       " 'host_verifications',\n",
+       " 'host_has_profile_pic',\n",
+       " 'host_identity_verified',\n",
+       " 'neighbourhood',\n",
+       " 'neighbourhood_cleansed',\n",
+       " 'property_type',\n",
+       " 'room_type',\n",
+       " 'bathrooms_text',\n",
+       " 'amenities',\n",
+       " 'has_availability',\n",
+       " 'license',\n",
+       " 'instant_bookable']"
+      ]
+     },
+     "execution_count": 34,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# This shows all columns that contain objects - e.g. name, description etc\n",
+    "df.select_dtypes(include='object').columns.tolist()\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8f18dc33-ff95-43b8-8f16-2df13770f8ab",
+   "metadata": {},
+   "source": [
+    "### Variables Overview\n",
+    "\n",
+    "**Continuous Variables**\n",
+    "- `price`: Price per night\n",
+    "- `minimum_nights`: Minimum stay requirement per listing\n",
+    "- `reviews_per_month`: Average number of reviews received per month\n",
+    "\n",
+    "**Categorical Variables**\n",
+    "- `room_type`: The type of accommodation (e.g., Private Room, Entire Home)\n",
+    "- `neighbourhood`: The area or district where the listing is located\n",
+    "- `host_is_superhost`: Whether the host is classified as a superhost\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3c2e3793-57d4-4c7b-bbbe-dfdaf92395b6",
+   "metadata": {},
+   "source": [
+    "# Task 7) Consider limitations and ethics"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4b213127-43c9-49af-a94a-7262103de491",
+   "metadata": {},
+   "source": [
+    "### Limitations and Ethical Considerations\n",
+    "\n",
+    "- **Data Age**: The dataset was last updated on 2 March 2025, making it highly relevant and up-to-date for current market insights.\n",
+    "- **Missing Data**: Several columns (e.g., `host_about`, `calendar_updated`) contain a significant number of missing values and were not included in the main analysis.\n",
+    "- **Bias**: The dataset only includes listings from Amsterdam. This restricts the findings to a specific geographic context and may not be generalizable to other cities or regions.\n",
+    "- **Source and Licensing**: The data is sourced from Inside Airbnb, a reputable open-data platform. It is publicly available and can be used for non-commercial, educational purposes.\n",
+    "- **Privacy**: No personally identifiable information is included. All host and listing data is appropriately anonymized to ensure user privacy.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 38,
+   "id": "fa2b7c2d-52c4-4e1f-a282-a827d16be659",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Export data to csv\n",
+    "\n",
+    "df.to_csv(os.path.join(path, '02 Data','Prepared Data', 'amsterdam_listings_cleaned.csv'))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a9ca4168-be3d-4952-9667-a46c5102926c",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python [conda env:base] *",
+   "language": "python",
+   "name": "conda-base-py"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
