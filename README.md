@@ -69,4 +69,9 @@ The project follows a structured folder system:
    ```
 5. **Run the analysis within the provided notebooks**.
 
+## 📊 Tableau Storyboard
+Explore the interactive dashboard summarizing key insights from this project:
+
+👉 [Airbnb in Amsterdam – A Data-Driven Exploration](https://public.tableau.com/views/AirbnbinAmsterdam-AData-DrivenExploration/Story1?:language=de-DE&publish=yes&:sid=&:display_count=n&:origin=viz_share_link)
+
 ---
